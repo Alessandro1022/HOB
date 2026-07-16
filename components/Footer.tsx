@@ -1,9 +1,12 @@
 import Reveal from './Reveal';
+import Magnetic from './Magnetic';
 
 export default function Footer() {
   return (
-    <footer className="footer" id="kontakt">
-      <Reveal className="hob">HOB</Reveal>
+    <footer className="footer">
+      <Reveal className="hob">
+        <span className="metal-text">HOB</span>
+      </Reveal>
       <Reveal as="h2" delay={0.12}>
         House of Business
       </Reveal>
@@ -11,9 +14,11 @@ export default function Footer() {
         En plats där människor växer tillsammans.
       </Reveal>
       <Reveal delay={0.36}>
-        <a className="cta" href="mailto:kontakt@houseofbusiness.se">
-          Boka ett möte
-        </a>
+        <Magnetic>
+          <a className="cta" href="#kontakt">
+            Boka ett möte
+          </a>
+        </Magnetic>
       </Reveal>
       <div className="foot-meta">
         <span>© 2026 House of Business</span>

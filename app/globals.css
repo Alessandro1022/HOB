@@ -329,3 +329,108 @@ body {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   html { scroll-behavior: auto; }
 }
+
+/* ---------- masthead (varumärkesmanual: hemsida horisontell) ---------- */
+.masthead {
+  background: var(--paper); color: var(--ink);
+  padding: clamp(44px, 7vh, 72px) 24px clamp(30px, 4.6vh, 46px);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  position: relative; z-index: 10;
+}
+.masthead-wordmark {
+  font-family: var(--disp); font-weight: 500;
+  font-size: clamp(22px, 4.2vw, 44px);
+  letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--ink); text-decoration: none; white-space: nowrap;
+}
+.masthead-divider {
+  width: min(300px, 46vw); height: 1px; background: rgba(16, 16, 16, 0.25);
+  margin: clamp(20px, 3vh, 30px) 0;
+}
+.masthead-links { display: flex; gap: clamp(26px, 6vw, 84px); flex-wrap: wrap; justify-content: center; }
+.masthead-links a {
+  color: var(--ink); text-decoration: none; font-size: 11px;
+  letter-spacing: 0.3em; text-transform: uppercase; font-weight: 500;
+  position: relative; padding-bottom: 6px;
+}
+.masthead-links a::after {
+  content: ''; position: absolute; left: 50%; bottom: 0; height: 1px; width: 0;
+  background: var(--ink); transition: all 0.4s cubic-bezier(0.7, 0, 0.2, 1);
+  transform: translateX(-50%);
+}
+.masthead-links a:hover::after { width: 100%; }
+
+/* kompakt nav får bakgrund istället för blend när masthead är ljus */
+.nav {
+  mix-blend-mode: normal;
+  background: rgba(7, 7, 7, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+  padding-top: 18px; padding-bottom: 18px;
+}
+.nav-mark { color: var(--paper); }
+.nav-links a { color: var(--silver); }
+.nav-links a::after { background: var(--halo); }
+
+/* ---------- metallisk text (HOB-monogram enligt manual) ---------- */
+.metal-text {
+  background: linear-gradient(180deg, #f4f2ed 0%, #c9c8c2 38%, #8c8b85 52%, #e8e6df 66%, #b3b2ab 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+
+/* ---------- kontakt ---------- */
+.kontakt {
+  background: var(--black);
+  background: radial-gradient(ellipse 70% 50% at 80% 20%, #14130f 0%, var(--black) 60%);
+}
+.kontakt-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(46px, 7vw, 110px); align-items: start;
+}
+.kontakt-lead { color: var(--silver); max-width: 44ch; margin-top: 6px; font-size: clamp(15px, 1.4vw, 17px); }
+.kontakt-rows { margin-top: clamp(36px, 5vh, 56px); border-top: 1px solid var(--line); }
+.krow {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 20px;
+  padding: 22px 0; border-bottom: 1px solid var(--line);
+}
+.krow .klabel { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--silver-deep); }
+.krow a, .krow span:not(.klabel) {
+  color: var(--paper); text-decoration: none;
+  font-family: var(--disp); font-size: clamp(17px, 1.8vw, 22px);
+  transition: text-shadow 0.3s, color 0.3s;
+}
+.krow a:hover { color: var(--halo); text-shadow: 0 0 22px rgba(255, 242, 217, 0.45); }
+
+.kform { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; }
+.kfield { position: relative; padding-top: 22px; }
+.kfield input, .kfield textarea {
+  width: 100%; background: transparent; border: none;
+  border-bottom: 1px solid rgba(201, 200, 194, 0.3);
+  color: var(--paper); font-family: var(--body); font-weight: 300;
+  font-size: 16px; padding: 12px 2px 14px; outline: none; resize: vertical;
+  transition: border-color 0.35s, box-shadow 0.35s;
+}
+.kfield label {
+  position: absolute; left: 2px; top: 34px;
+  font-size: 14px; color: var(--silver-deep); pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+.kfield input:focus, .kfield textarea:focus {
+  border-color: var(--halo);
+  box-shadow: 0 1px 0 0 rgba(255, 242, 217, 0.5), 0 14px 30px -18px rgba(255, 242, 217, 0.25);
+}
+.kfield input:focus + label, .kfield textarea:focus + label,
+.kfield input:not(:placeholder-shown) + label, .kfield textarea:not(:placeholder-shown) + label {
+  top: 0; font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--silver);
+}
+.kform-btn {
+  margin-top: 34px; align-self: flex-start; cursor: pointer;
+  background: transparent; font-family: var(--body);
+}
+
+@media (max-width: 900px) {
+  .kontakt-grid { grid-template-columns: 1fr; }
+  .masthead-links { gap: 22px; }
+}
