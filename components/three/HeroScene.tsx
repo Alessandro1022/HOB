@@ -31,9 +31,9 @@ function Particles({ count = 900 }: { count?: number }) {
       </bufferGeometry>
       <pointsMaterial
         size={0.028}
-        color="#fff2d9"
+        color="#8c8b85"
         transparent
-        opacity={0.55}
+        opacity={0.5}
         sizeAttenuation
         depthWrite={false}
       />
@@ -64,11 +64,11 @@ function SignPlate() {
         {/* halo-glow bakom plattan */}
         <mesh position={[0, 0, -0.35]}>
           <planeGeometry args={[5.4, 6.8]} />
-          <meshBasicMaterial color="#fff2d9" transparent opacity={0.07} />
+          <meshBasicMaterial color="#ffdfae" transparent opacity={0.3} />
         </mesh>
         <mesh position={[0, 0, -0.2]}>
           <planeGeometry args={[4.4, 5.8]} />
-          <meshBasicMaterial color="#fff2d9" transparent opacity={0.1} />
+          <meshBasicMaterial color="#ffe9c4" transparent opacity={0.4} />
         </mesh>
         {/* borstad silverplåt */}
         <mesh>
@@ -100,7 +100,7 @@ export default function HeroScene() {
       <pointLight position={[4, -2, 2]} intensity={0.7} color="#c9c8c2" />
       <Particles />
       <SignPlate />
-      <fog attach="fog" args={['#070707', 9, 20]} />
+      <fog attach="fog" args={['#f4f2ed', 9, 20]} />
     </Canvas>
   );
 }
