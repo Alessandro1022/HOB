@@ -1,10 +1,7 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { motion, useReducedMotion } from 'framer-motion';
 import Reveal from './Reveal';
-
-const HeroScene = dynamic(() => import('./three/HeroScene'), { ssr: false });
 
 function Staggered({ text, base = 0 }: { text: string; base?: number }) {
   const reduce = useReducedMotion();
@@ -29,7 +26,6 @@ function Staggered({ text, base = 0 }: { text: string; base?: number }) {
 export default function Hero() {
   return (
     <header className="hero">
-      <HeroScene />
       <div className="hero-content">
         <Reveal className="hero-eyebrow">Ett affärshus · Grundat för framtiden</Reveal>
         <h1 className="wordmark">
@@ -43,7 +39,11 @@ export default function Hero() {
           <em>Vi bygger ett affärshus.</em>
         </Reveal>
       </div>
-      <div className="scroll-cue" aria-hidden="true">
+      <div
+        className="scroll-cue"
+        aria-hidden="true"
+        style={{ left: 28, transform: 'none', bottom: 24 }}
+      >
         <span>Skrolla</span>
       </div>
     </header>
