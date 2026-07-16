@@ -1,89 +1,93 @@
 'use client';
 
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float } from '@react-three/drei';
 import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
-function Particles({ count = 900 }: { count?: number }) {
+const COUNT = 1400;
+
+const vertexShader = `
+attribute float aPhase;
+attribute float aSpeed;
+attribute float aScale;
+attribute float aWarm;
+uniform float uTime;
+varying float vAlpha;
+varying float vWarm;
+void main() {
+  float tw = 0.5 + 0.5 * sin(uTime * aSpeed + aPhase);
+  tw = tw * tw; // mjukare puls: dröjer i mörkt, pustar fram
+  vAlpha = 0.06 + 0.94 * tw;
+  vWarm = aWarm;
+  vec4 mv = modelViewMatrix * vec4(position, 1.0);
+  gl_PointSize = aScale * (0.5 + 1.1 * tw) * (320.0 / -mv.z);
+  gl_Position = projectionMatrix * mv;
+}
+`;
+
+const fragmentShader = `
+varying float vAlpha;
+varying float vWarm;
+void main() {
+  vec2 uv = gl_PointCoord - 0.5;
+  float d = length(uv);
+  float core = smoothstep(0.5, 0.02, d);
+  float halo = smoothstep(0.5, 0.25, d) * 0.35;
+  vec3 cool = vec3(0.38, 0.38, 0.36);
+  vec3 warm = vec3(0.78, 0.6, 0.28);
+  vec3 col = mix(cool, warm, vWarm);
+  gl_FragColor = vec4(col, (core + halo) * vAlpha);
+}
+`;
+
+function Stars() {
   const ref = useRef<THREE.Points>(null);
-  const positions = useMemo(() => {
-    const arr = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      arr[i * 3] = (Math.random() - 0.5) * 26;
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 16;
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 12 - 4;
+  const mat = useRef<THREE.ShaderMaterial>(null);
+
+  const { positions, phases, speeds, scales, warms } = useMemo(() => {
+    const positions = new Float32Array(COUNT * 3);
+    const phases = new Float32Array(COUNT);
+    const speeds = new Float32Array(COUNT);
+    const scales = new Float32Array(COUNT);
+    const warms = new Float32Array(COUNT);
+    for (let i = 0; i < COUNT; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 30;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 18;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 14 - 4;
+      phases[i] = Math.random() * Math.PI * 2;
+      speeds[i] = 0.35 + Math.random() * 1.1; // olika andningstakt
+      scales[i] = 0.5 + Math.random() * 1.7;
+      warms[i] = Math.random() < 0.22 ? 1 : 0; // var femte stjärna guldvarm
     }
-    return arr;
-  }, [count]);
+    return { positions, phases, speeds, scales, warms };
+  }, []);
 
   useFrame(({ clock, pointer }) => {
+    if (mat.current) mat.current.uniforms.uTime.value = clock.elapsedTime;
     if (!ref.current) return;
     const t = clock.elapsedTime;
-    ref.current.rotation.y = t * 0.015 + pointer.x * 0.06;
-    ref.current.rotation.x = Math.sin(t * 0.1) * 0.03 + pointer.y * 0.04;
+    ref.current.rotation.y = t * 0.012 + pointer.x * 0.05;
+    ref.current.rotation.x = Math.sin(t * 0.08) * 0.025 + pointer.y * 0.035;
   });
 
   return (
     <points ref={ref}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+        <bufferAttribute attach="attributes-aPhase" args={[phases, 1]} />
+        <bufferAttribute attach="attributes-aSpeed" args={[speeds, 1]} />
+        <bufferAttribute attach="attributes-aScale" args={[scales, 1]} />
+        <bufferAttribute attach="attributes-aWarm" args={[warms, 1]} />
       </bufferGeometry>
-      <pointsMaterial
-        size={0.028}
-        color="#8c8b85"
+      <shaderMaterial
+        ref={mat}
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        uniforms={{ uTime: { value: 0 } }}
         transparent
-        opacity={0.5}
-        sizeAttenuation
         depthWrite={false}
       />
     </points>
-  );
-}
-
-function SignPlate() {
-  const group = useRef<THREE.Group>(null);
-
-  useFrame(({ pointer }) => {
-    if (!group.current) return;
-    group.current.rotation.y = THREE.MathUtils.lerp(
-      group.current.rotation.y,
-      pointer.x * 0.28 - 0.34,
-      0.06
-    );
-    group.current.rotation.x = THREE.MathUtils.lerp(
-      group.current.rotation.x,
-      -pointer.y * 0.14 + 0.04,
-      0.06
-    );
-  });
-
-  return (
-    <Float speed={1.1} rotationIntensity={0.12} floatIntensity={0.5}>
-      <group ref={group} position={[3.4, -0.2, -2.5]}>
-        {/* halo-glow bakom plattan */}
-        <mesh position={[0, 0, -0.35]}>
-          <planeGeometry args={[5.4, 6.8]} />
-          <meshBasicMaterial color="#ffdfae" transparent opacity={0.3} />
-        </mesh>
-        <mesh position={[0, 0, -0.2]}>
-          <planeGeometry args={[4.4, 5.8]} />
-          <meshBasicMaterial color="#ffe9c4" transparent opacity={0.4} />
-        </mesh>
-        {/* borstad silverplåt */}
-        <mesh>
-          <boxGeometry args={[3.6, 4.9, 0.08]} />
-          <meshStandardMaterial color="#b9b8b1" metalness={0.92} roughness={0.32} />
-        </mesh>
-        {/* upphöjda "textrader" i mattsvart */}
-        {[1.4, 0.55, -0.35].map((y, i) => (
-          <mesh key={i} position={[0, y, 0.07]}>
-            <boxGeometry args={[i === 1 ? 1.1 : 2.4, 0.34, 0.05]} />
-            <meshStandardMaterial color="#0e0e0d" metalness={0.5} roughness={0.55} />
-          </mesh>
-        ))}
-      </group>
-    </Float>
   );
 }
 
@@ -95,12 +99,7 @@ export default function HeroScene() {
       gl={{ antialias: true, alpha: true }}
       dpr={[1, 1.8]}
     >
-      <ambientLight intensity={0.35} />
-      <directionalLight position={[-4, 5, 6]} intensity={1.4} color="#fff2d9" />
-      <pointLight position={[4, -2, 2]} intensity={0.7} color="#c9c8c2" />
-      <Particles />
-      <SignPlate />
-      <fog attach="fog" args={['#f4f2ed', 9, 20]} />
+      <Stars />
     </Canvas>
   );
 }
