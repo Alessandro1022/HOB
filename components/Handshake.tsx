@@ -13,6 +13,8 @@ const HAND_PATH =
   'M0,96 L138,93 C160,91 176,84 190,68 C199,57 211,44 222,44 C232,44 236,53 230,63 C225,71 217,79 210,84 L232,82 C246,80 262,80 278,84 L392,100 C404,102 406,116 396,122 L282,138 C260,142 240,146 224,148 C200,151 176,153 152,154 L0,158 Z';
 const FINGER_LINES = 'M236,86 L384,104 M232,101 L390,111 M228,116 L386,120';
 
+const SHADOW = '0 2px 26px rgba(7,7,7,0.95), 0 0 60px rgba(7,7,7,0.85)';
+
 function useLine(
   p: MotionValue<number>,
   fadeIn: [number, number],
@@ -131,17 +133,26 @@ export default function Handshake() {
 
         <motion.div
           className="shake-line"
-          style={{ top: '12%', x: '-50%', opacity: lineA.opacity, y: lineA.y }}
+          style={{ top: '12%', x: '-50%', opacity: lineA.opacity, y: lineA.y, zIndex: 7 }}
         >
-          <h2>Två parter. En idé.</h2>
+          <h2 style={{ textShadow: SHADOW }}>Två parter. En idé.</h2>
           <p>Varje affär börjar med ett möte</p>
         </motion.div>
 
         <motion.div
           className="shake-line"
-          style={{ top: '50%', x: '-50%', translateY: '-50%', opacity: lineB.opacity }}
+          style={{
+            top: '10%',
+            x: '-50%',
+            opacity: lineB.opacity,
+            zIndex: 7,
+            background:
+              'radial-gradient(ellipse 70% 100% at 50% 50%, rgba(7,7,7,0.88) 0%, rgba(7,7,7,0.55) 55%, transparent 78%)',
+            padding: '28px 20px 32px',
+            borderRadius: '20px',
+          }}
         >
-          <h2>
+          <h2 style={{ textShadow: SHADOW }}>
             Där kompetens, kapital
             <br />
             och affärer möts.
@@ -151,9 +162,9 @@ export default function Handshake() {
 
         <motion.div
           className="shake-line"
-          style={{ bottom: '12%', x: '-50%', opacity: lineC.opacity, y: lineC.y }}
+          style={{ bottom: '12%', x: '-50%', opacity: lineC.opacity, y: lineC.y, zIndex: 7 }}
         >
-          <h2>
+          <h2 style={{ textShadow: SHADOW }}>
             <em>…och växer vidare, var för sig — starkare tillsammans.</em>
           </h2>
           <p>Företag hjälper företag att växa</p>
